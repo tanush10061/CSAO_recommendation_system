@@ -1,0 +1,8 @@
+{
+  "Biryani": ["Raita", "Salan", "Gulab Jamun"],
+  "Butter Chicken": ["Naan", "Roti", "Raita"],
+  "Dal Makhani": ["Roti", "Naan", "Papad"],
+  "Paneer Tikka": ["Naan", "Raita", "Coke"],
+  "Chicken Fried Rice": ["Spring Rolls", "Coke", "Ice Cream"],
+  "Hakka Noodles": ["Spring Rolls", "Coke"]
+}

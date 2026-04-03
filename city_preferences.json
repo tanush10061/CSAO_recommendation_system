@@ -1,0 +1,7 @@
+{
+  "Mumbai": ["Butter Chicken", "Paneer Tikka", "Ice Cream"],
+  "Delhi": ["Butter Chicken", "Naan", "Lassi"],
+  "Bangalore": ["Biryani", "Coke", "Brownie"],
+  "Kolkata": ["Biryani", "Rasgulla", "Lassi"],
+  "Hyderabad": ["Biryani", "Raita", "Gulab Jamun"]
+}
