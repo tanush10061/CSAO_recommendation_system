@@ -1,28 +1,31 @@
-# Streamlit Deployment Guide
+# Netlify Deployment Guide
 
 ## Files added for deployment
 
-- `app.py` - Main Streamlit app entry point
-- `requirements.txt` - Python dependencies for Streamlit Cloud
-- `items_database.json` - Item catalog used by the recommender
-- `meal_completion_rules.json` - Meal-completion recommendation rules
+- `index.html` - Main Netlify entry point
+- `styles.css` - UI styling
+- `app.js` - Recommendation logic and UI behavior
+- `netlify.toml` - Netlify publish and routing config
+- `items_database.json` - Source item catalog from the project
+- `meal_completion_rules.json` - Meal-completion rules from the project
 - `city_preferences.json` - City-level preference priors
-- `.streamlit/config.toml` - Theme configuration
 
-## Run locally
+## Run locally as a static site
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+python3 -m http.server 8000
 ```
 
-## Deploy on Streamlit Community Cloud
+Then open `http://localhost:8000`.
 
-1. Push this project to a GitHub repository.
-2. Go to [https://share.streamlit.io](https://share.streamlit.io).
-3. Click **New app**.
-4. Choose your repository, branch, and set the main file path to `app.py`.
-5. Click **Deploy**.
+## Deploy on Netlify
+
+1. Push this project to your GitHub repository.
+2. Go to [https://app.netlify.com](https://app.netlify.com).
+3. Click **Add new site** and choose **Import an existing project**.
+4. Select your GitHub repository.
+5. Keep the default settings. Netlify will detect `netlify.toml`.
+6. Click **Deploy site**.
 
 ## Important note
 
@@ -34,4 +37,4 @@ The original repository references model files like `csao_recommender_model.pkl`
 - user segment and frequency
 - price-fit heuristics
 
-If you later add the trained `.pkl` model files to the repo, the app can be upgraded to use true model inference.
+If you later add an external API or rewrite the model inference in JavaScript, this app can be extended further without changing the Netlify deployment flow.

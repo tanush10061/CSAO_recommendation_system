@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zomato CSAO Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Cart Super Add-On</p>
+          <h1>Zomato CSAO Recommendation System</h1>
+          <p class="hero-text">
+            A Netlify-ready interactive demo that recommends add-ons using meal
+            completion, city preferences, cart composition, and price-fit logic.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="hero-stat">
+            <span class="stat-label">Core idea</span>
+            <strong>Context-aware ranking</strong>
+          </div>
+          <div class="hero-stat">
+            <span class="stat-label">Recommendation style</span>
+            <strong>Rule-based + scoring</strong>
+          </div>
+          <div class="hero-stat">
+            <span class="stat-label">Deployment</span>
+            <strong>Static app for Netlify</strong>
+          </div>
+        </div>
+      </section>
+
+      <main class="layout">
+        <aside class="panel controls-panel">
+          <h2>Session Context</h2>
+          <label class="field">
+            <span>City</span>
+            <select id="city"></select>
+          </label>
+          <label class="field">
+            <span>Hour of day</span>
+            <input id="hour" type="range" min="8" max="23" value="13" />
+            <div class="range-meta">
+              <strong id="hourValue">13:00</strong>
+              <span id="mealTimeBadge" class="badge">Lunch</span>
+            </div>
+          </label>
+          <label class="field">
+            <span>User Segment</span>
+            <select id="userSegment">
+              <option value="budget">budget</option>
+              <option value="premium">premium</option>
+              <option value="occasional">occasional</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>User Frequency</span>
+            <select id="userFrequency">
+              <option value="new">new</option>
+              <option value="regular" selected>regular</option>
+              <option value="power">power</option>
+            </select>
+          </label>
+          <button id="resetBtn" class="secondary-btn" type="button">Reset cart</button>
+        </aside>
+
+        <section class="content">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Step 1</p>
+                <h2>Build the current cart</h2>
+              </div>
+              <p class="section-note">Select one or more items to simulate the session.</p>
+            </div>
+            <div id="itemCatalog" class="catalog-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Step 2</p>
+                <h2>Cart snapshot</h2>
+              </div>
+              <p class="section-note">The app recalculates metrics instantly as the cart changes.</p>
+            </div>
+            <div id="cartEmpty" class="empty-state">Add at least one cart item to start generating recommendations.</div>
+            <div id="cartContent" class="hidden">
+              <div id="selectedItems" class="selected-items"></div>
+              <div class="metrics-grid">
+                <article class="metric-card">
+                  <span>Cart Size</span>
+                  <strong id="cartSize">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Cart Value</span>
+                  <strong id="cartValue">INR 0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Average Item Price</span>
+                  <strong id="avgPrice">INR 0</strong>
+                </article>
+                <article class="metric-card accent">
+                  <span>Projected AOV Lift</span>
+                  <strong id="aovLift">0%</strong>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Step 3</p>
+                <h2>Top recommendations</h2>
+              </div>
+              <p class="section-note">Ranked using meal-completion and contextual heuristics.</p>
+            </div>
+            <div id="recommendationsEmpty" class="empty-state">Recommendations will appear here once the cart has items.</div>
+            <div id="recommendationsContent" class="hidden">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Item</th>
+                      <th>Category</th>
+                      <th>Type</th>
+                      <th>Price</th>
+                      <th>Score</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recommendationRows"></tbody>
+                </table>
+              </div>
+              <div id="recommendationCards" class="recommendation-cards"></div>
+            </div>
+          </section>
+
+          <section class="panel insights-panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Project Insights</p>
+                <h2>Feature importance snapshot</h2>
+              </div>
+              <p class="section-note">Key signals from your original model outputs.</p>
+            </div>
+            <div id="featureImportance" class="feature-bars"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>

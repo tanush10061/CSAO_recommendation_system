@@ -1,30 +1,27 @@
 # Zomato CSAO Rail Recommendation System
 
-### Requirements
+This repository now includes a Netlify-ready static demo built from the original recommendation-system project logic. The deployable entry point is `index.html`.
 
-Create a `requirements.txt` file with the following content:
+## Deployable App
 
-```txt
-streamlit==1.31.0
-pandas==2.1.4
-numpy==1.26.3
-scikit-learn==1.4.0
-joblib==1.3.2
-plotly==5.18.0
-```
-
-## Problem Statement
-Build an intelligent recommendation system for Zomato's Cart Super Add-On (CSAO) rail to suggest relevant items that increase AOV while maintaining high customer satisfaction.
+- `index.html` - main app entry point for Netlify
+- `styles.css` - frontend styling
+- `app.js` - recommendation engine and UI logic
+- `netlify.toml` - Netlify configuration
+- `items_database.json` - item catalog
+- `meal_completion_rules.json` - meal-completion rules
+- `city_preferences.json` - city-level recommendation priors
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the demo app
-streamlit run app.py
+python3 -m http.server 8000
 ```
+
+Then open `http://localhost:8000`.
+
+## Problem Statement
+Build an intelligent recommendation system for Zomato's Cart Super Add-On (CSAO) rail to suggest relevant items that increase AOV while maintaining high customer satisfaction.
 
 ## Solution Overview
 
@@ -48,12 +45,12 @@ streamlit run app.py
 
 ## Files
 
-- `app.py` - Interactive Streamlit demo
-- `csao_recommender_model.pkl` - Trained model
-- `zomato_cart_sessions.csv` - Synthetic training data (15K sessions)
+- `index.html` - Interactive Netlify demo
+- `app.js` - Frontend recommendation logic
+- `styles.css` - Frontend styling
+- `zomato_cart_sessions (1).csv` - Synthetic training data
 - `items_database.json` - 23 food items with metadata
 - `meal_completion_rules.json` - Expert rules
-- `model_results.json` - Evaluation metrics
 - `feature_importance.csv` - Top features
 
 ## Submission Checklist
@@ -77,13 +74,11 @@ streamlit run app.py
   Estimated +18% Average Order Value (AOV) lift via targeted ranking.
 
 - [x] **Interactive Demo**  
-  Streamlit-based interactive dashboard:
-  - Upload / simulate user data  
-  - Real-time fraud probability prediction  
-  - Top-K risk ranking visualization  
-  - Feature importance visualization  
-  - City-wise risk analytics dashboard  
+  Browser-based dashboard with:
+  - cart simulation
+  - real-time recommendation ranking
+  - feature importance visualization
+  - context-aware add-on suggestions
 
 ## Author
 Mohit Kumar | IIT Kharagpur
-'''
