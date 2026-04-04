@@ -78,6 +78,20 @@ const recommendationRows = document.getElementById("recommendationRows");
 const recommendationCards = document.getElementById("recommendationCards");
 const featureImportanceWrap = document.getElementById("featureImportance");
 const resetBtn = document.getElementById("resetBtn");
+const detectContextBtn = document.getElementById("detectContextBtn");
+const contextStatus = document.getElementById("contextStatus");
+const locationDetails = document.getElementById("locationDetails");
+const locationCoords = document.getElementById("locationCoords");
+const locationAccuracy = document.getElementById("locationAccuracy");
+const resolvedPlace = document.getElementById("resolvedPlace");
+
+const supportedCities = {
+  Mumbai: { lat: 19.076, lon: 72.8777 },
+  Delhi: { lat: 28.6139, lon: 77.209 },
+  Bangalore: { lat: 12.9716, lon: 77.5946 },
+  Kolkata: { lat: 22.5726, lon: 88.3639 },
+  Hyderabad: { lat: 17.385, lon: 78.4867 },
+};
 
 function inferMealTime(hour) {
   if (hour < 11) return "breakfast";
@@ -88,6 +102,29 @@ function inferMealTime(hour) {
 
 function titleCase(text) {
   return text.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+  const toRad = (value) => (value * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  return 2 * earthRadiusKm * Math.asin(Math.sqrt(a));
+}
+
+function getNearestSupportedCity(latitude, longitude) {
+  return Object.entries(supportedCities)
+    .map(([city, coords]) => ({
+      city,
+      distance: getDistance(latitude, longitude, coords.lat, coords.lon),
+    }))
+    .sort((left, right) => left.distance - right.distance)[0];
 }
 
 function getProfile(selectedItems) {
@@ -296,6 +333,107 @@ function updateTimeUI() {
   mealTimeBadge.textContent = titleCase(mealTime);
 }
 
+function applyDeviceTime() {
+  const now = new Date();
+  const localHour = now.getHours();
+  hourInput.value = String(localHour);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { localHour, timezone };
+}
+
+async function reverseGeocode(latitude, longitude) {
+  const url = new URL("https://nominatim.openstreetmap.org/reverse");
+  url.searchParams.set("format", "jsonv2");
+  url.searchParams.set("lat", String(latitude));
+  url.searchParams.set("lon", String(longitude));
+  url.searchParams.set("zoom", "18");
+  url.searchParams.set("addressdetails", "1");
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Reverse geocoding failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+function updateLocationCard({ latitude, longitude, accuracy, placeLabel }) {
+  locationDetails.classList.remove("hidden");
+  locationCoords.textContent = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+  locationAccuracy.textContent = `${Math.round(accuracy)} meters`;
+  resolvedPlace.textContent = placeLabel || "Not resolved";
+}
+
+function detectDeviceContext() {
+  const timeInfo = applyDeviceTime();
+  contextStatus.textContent = `Using device time from ${timeInfo.timezone}. Detecting current device location...`;
+  updateUI();
+
+  if (!navigator.geolocation) {
+    contextStatus.textContent = `Using device time from ${timeInfo.timezone}. Browser location is not supported here.`;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+      const nearest = getNearestSupportedCity(latitude, longitude);
+      let placeLabel = `Nearest supported city: ${nearest.city}`;
+
+      try {
+        const geocodeData = await reverseGeocode(latitude, longitude);
+        const address = geocodeData.address || {};
+        const actualCity =
+          address.city ||
+          address.town ||
+          address.village ||
+          address.municipality ||
+          address.county ||
+          geocodeData.name;
+        const state = address.state;
+        const country = address.country;
+        placeLabel = [actualCity, state, country].filter(Boolean).join(", ") || geocodeData.display_name || placeLabel;
+
+        if (actualCity) {
+          const matchingCity = Object.keys(supportedCities).find(
+            (city) => city.toLowerCase() === actualCity.toLowerCase()
+          );
+          citySelect.value = matchingCity || nearest.city;
+        } else {
+          citySelect.value = nearest.city;
+        }
+      } catch (error) {
+        citySelect.value = nearest.city;
+        placeLabel = `${placeLabel} (address lookup unavailable)`;
+      }
+
+      updateLocationCard({
+        latitude,
+        longitude,
+        accuracy: position.coords.accuracy,
+        placeLabel,
+      });
+
+      contextStatus.textContent = `Using device time from ${timeInfo.timezone}. Current coordinates captured from the browser. Recommendations are mapped to ${citySelect.value} because your app supports a fixed city set.`;
+      updateUI();
+    },
+    (error) => {
+      const fallbackMessage =
+        error.code === error.PERMISSION_DENIED
+          ? "Location permission was denied."
+          : "Location could not be determined.";
+      contextStatus.textContent = `Using device time from ${timeInfo.timezone}. ${fallbackMessage} Keeping your selected city.`;
+      updateUI();
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 function updateUI() {
   updateTimeUI();
   renderItemCatalog();
@@ -344,3 +482,4 @@ resetBtn.addEventListener("click", () => {
   state.selectedItems = new Set();
   updateUI();
 });
+detectContextBtn.addEventListener("click", detectDeviceContext);

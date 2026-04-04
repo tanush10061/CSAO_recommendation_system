@@ -54,6 +54,26 @@
               <span id="mealTimeBadge" class="badge">Lunch</span>
             </div>
           </label>
+          <button id="detectContextBtn" class="secondary-btn" type="button">
+            Use my device time and location
+          </button>
+          <p id="contextStatus" class="section-note">
+            Uses browser permission to estimate the nearest supported city and current local time.
+          </p>
+          <div id="locationDetails" class="location-details hidden">
+            <div class="location-row">
+              <span>Detected coordinates</span>
+              <strong id="locationCoords">-</strong>
+            </div>
+            <div class="location-row">
+              <span>Accuracy</span>
+              <strong id="locationAccuracy">-</strong>
+            </div>
+            <div class="location-row">
+              <span>Resolved place</span>
+              <strong id="resolvedPlace">-</strong>
+            </div>
+          </div>
           <label class="field">
             <span>User Segment</span>
             <select id="userSegment">
